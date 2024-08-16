@@ -1,10 +1,12 @@
-const SerialPort = require('serialport');
+const { SerialPort } = require('serialport');
+const { ReadlineParser } = require('@serialport/parser-readline');
+
 const { portPath, baudRate } = require('./config');
-const { sendToArduino, setupParser } = require('./utils');
+const { sendToArduino } = require('./utils');
 
-const port = new SerialPort(portPath, { baudRate });
+const port = new SerialPort({ path: portPath, baudRate });
 
-const parser = setupParser(port);
+const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
 
 port.on('open', () => {
     console.log(`Serial port ${portPath} opened`);
